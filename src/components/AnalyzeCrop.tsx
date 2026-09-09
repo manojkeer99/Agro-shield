@@ -437,5 +437,135 @@ export function AnalyzeCrop() {
                   >
                     {analysisResult.riskLevel === "HIGH"
                       ? t.high
-                      : analysisResult.riskLevel === "MODERATE"
-      
+                                            : analysisResult.riskLevel === "MODERATE"
+                      ? t.moderate
+                      : t.low}
+                  </span>
+                  <span className="text-xs text-slate-500">
+                    (Composite Multi-Signal Score: <strong className="text-slate-800">{analysisResult.riskScore} / 100</strong>)
+                  </span>
+                </div>
+              </div>
+              <div className="text-right text-xs text-slate-500">
+                Recommendation: <strong className="text-slate-800">Further field inspection recommended.</strong>
+              </div>
+            </div>
+
+            {/* Visual Risk Bar */}
+            <div className="space-y-1.5">
+              <div className="w-full h-3 bg-slate-200 rounded-full overflow-hidden flex">
+                <div
+                  className={`h-full transition-all duration-700 ${
+                    analysisResult.riskScore > 65
+                      ? "bg-rose-500"
+                      : analysisResult.riskScore > 35
+                      ? "bg-amber-500"
+                      : "bg-emerald-500"
+                  }`}
+                  style={{ width: `${analysisResult.riskScore}%` }}
+                ></div>
+              </div>
+              <div className="flex justify-between text-[10px] text-slate-400 font-medium">
+                <span>0 (Safe)</span>
+                <span>35 (Moderate Threshold)</span>
+                <span>65 (High Risk Outbreak Threshold)</span>
+                <span>100 (Critical)</span>
+              </div>
+            </div>
+
+            {/* 4-Signal Breakdown Pills */}
+            <div className="pt-2 border-t border-slate-200/80 grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+              <div className="bg-white p-2.5 rounded-xl border border-slate-200">
+                <span className="text-slate-500 block text-[11px]">Image Analysis (50%)</span>
+                <span className="font-bold text-slate-900">
+                  {analysisResult.riskBreakdown?.imageScore || 45} / 50 pts
+                </span>
+              </div>
+              <div className="bg-white p-2.5 rounded-xl border border-slate-200">
+                <span className="text-slate-500 block text-[11px]">Agro-Weather (20%)</span>
+                <span className="font-bold text-slate-900">
+                  {analysisResult.riskBreakdown?.weatherScore || 18} / 20 pts
+                </span>
+              </div>
+              <div className="bg-white p-2.5 rounded-xl border border-slate-200">
+                <span className="text-slate-500 block text-[11px]">Symptoms (15%)</span>
+                <span className="font-bold text-slate-900">
+                  {analysisResult.riskBreakdown?.symptomsScore || 12} / 15 pts
+                </span>
+              </div>
+              <div className="bg-white p-2.5 rounded-xl border border-slate-200">
+                <span className="text-slate-500 block text-[11px]">Location Cluster (15%)</span>
+                <span className="font-bold text-slate-900">
+                  {analysisResult.riskBreakdown?.areaScore || 14} / 15 pts
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Action Plan Guidance */}
+          <div className="space-y-3">
+            <h4 className="font-bold text-slate-900 text-sm flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+              <span>Recommended General Crop-Care Guidance</span>
+            </h4>
+            <div className="bg-slate-50 rounded-2xl p-5 border border-slate-200 space-y-2">
+              {Array.isArray(analysisResult.actionPlan) &&
+                analysisResult.actionPlan.map((step: string, idx: number) => (
+                  <div key={idx} className="flex items-start gap-2.5 text-xs sm:text-sm text-slate-700">
+                    <span className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-bold flex items-center justify-center shrink-0 mt-0.5">
+                      {idx + 1}
+                    </span>
+                    <span>{step}</span>
+                  </div>
+                ))}
+            </div>
+          </div>
+
+          {/* Triggered Early Warning Alert Banner (if created) */}
+          {generatedAlert && (
+            <div className="bg-rose-50 border-2 border-rose-300 rounded-2xl p-5 space-y-3">
+              <div className="flex items-start gap-3">
+                <ShieldAlert className="w-6 h-6 text-rose-600 shrink-0" />
+                <div>
+                  <div className="text-xs font-black uppercase tracking-wider text-rose-900">
+                    EARLY WARNING ALERT TRIGGERED
+                  </div>
+                  <h4 className="font-bold text-rose-950 text-base mt-0.5">
+                    Clustered crop-health signals detected in {generatedAlert.area}
+                  </h4>
+                  <p className="text-xs text-rose-800 mt-1 leading-relaxed">
+                    Crop: <strong>{generatedAlert.cropType}</strong> | Status: <strong>{generatedAlert.status}</strong> | Cumulative Reports: <strong>{generatedAlert.reportCount}</strong>
+                  </p>
+                  <p className="text-xs text-rose-700 mt-1 italic">
+                    &quot;{generatedAlert.advisoryText}&quot;
+                  </p>
+                </div>
+              </div>
+              <div className="pt-2 flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("map")}
+                  className="px-4 py-2 rounded-xl bg-rose-600 text-white text-xs font-bold hover:bg-rose-700 transition cursor-pointer"
+                >
+                  View on Agricultural Risk Map
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("admin")}
+                  className="px-4 py-2 rounded-xl bg-slate-900 text-white text-xs font-bold hover:bg-slate-800 transition cursor-pointer"
+                >
+                  Track in Authority Portal
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Expert Confirmation Disclaimer Notice */}
+          <div className="p-4 bg-amber-50 rounded-xl border border-amber-200 text-xs text-amber-900">
+            <strong>Standard Disclaimer:</strong> {t.consultExpertWarning}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
