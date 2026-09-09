@@ -364,4 +364,7 @@ export const INDIAN_AGRI_LOCATIONS: LocationWeather[] = [
 
 export function findWeatherByLocation(locationInput: string): LocationWeather {
   const norm = locationInput.toLowerCase();
-  
+  const match = INDIAN_AGRI_LOCATIONS.find(loc => norm.includes(loc.area.toLowerCase()) || norm.includes(loc.state.toLowerCase()));
+  if (match) return match;
+  return INDIAN_AGRI_LOCATIONS[0];
+}
