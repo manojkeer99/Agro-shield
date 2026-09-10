@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { seedDatabaseIfEmpty } from "@/lib/seed";
+import  seedDatabaseIfEmpty  from "@/lib/seed";
 
 export async function POST(req: NextRequest) {
   try {
